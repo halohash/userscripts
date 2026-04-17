@@ -12,7 +12,7 @@
 // @grant        none
 // @license GNU GPLv3
 // @downloadURL https://halohash.github.io/userscripts/pixelfort.user.js
-// @updateURL https://update.greasyfork.org/scripts/512055/OWOT%20Toolbox.meta.js
+// @updateURL https://halohash.github.io/userscripts/pixelfort.user.js
 // ==/UserScript==
 
 (function() {
