@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-17.5
+// @version      2026-03-17.7
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -17,48 +17,32 @@
 
 (function() {
     'use strict';
-menu.addCheckboxOption(
-  "BlockSpam",
-  function () {
-    // checked → start
-    tms2 = setInterval(() => {
-      for (let x = 0; x <= 2; x++) {
-        for (let y = 0; y <= 2; y++) {
-          writeCharToXY(
-            '█',
-            0,
-            tileC * currentPosition[0] + currentPosition[2] + x,
-            tileR * currentPosition[1] + currentPosition[3] + y
-          );
-        }
-      }
-    }, 0x19);
-  },
-  function () {
-    // unchecked → stop
-    clearInterval(tms2);
-    tms2 = undefined;
-  },
-  false
-);
 // Random Unicode block character generator
 function randomBlockChar() {
-  const start = 0x0021;
+  const start = 0x1F300;
   const end = 0x2FA1D;
   return String.fromCharCode(
     Math.floor(Math.random() * (end - start + 1)) + start
   );
 }
 
+/* mustard build - 2026-03-17.7 - Open Source on Github by HaloHash - Public Use */
+	
+let tmsx = null;
+
 menu.addCheckboxOption(
   "Rammer",
   function () {
-    // checked → start
-    tms3 = setInterval(() => {
-      for (let x = 0; x <= 2; x++) {
-        for (let y = 0; y <= 2; y++) {
+    const size = 15;
+
+    // 🛑 prevent duplicate intervals
+    if (tmsx !== null) return;
+
+    tmsx = setInterval(() => {
+      for (let x = 0; x < size; x++) {
+        for (let y = 0; y < size; y++) {
           writeCharToXY(
-            randomBlockChar(), // 👈 random Unicode block each time
+            randomBlockChar(),
             0,
             tileC * currentPosition[0] + currentPosition[2] + x,
             tileR * currentPosition[1] + currentPosition[3] + y
@@ -68,9 +52,10 @@ menu.addCheckboxOption(
     }, 0x19);
   },
   function () {
-    // unchecked → stop
-    clearInterval(tms3);
-    tms3 = undefined;
+    if (tmsx !== null) {
+      clearInterval(tmsx);
+      tmsx = null; // 🔥 important
+    }
   },
   false
 );
@@ -162,7 +147,7 @@ fillmodal.onSubmit(function(){
     if(ifillcolor.input.value !== "000000"){
          modalColorUnchanged = false;
     }
-	fillchar = ifillchar.input.value.charAt(0); // only the first char will be saved
+	fillchar = ifillchar.input.value
         if(fillchar == ""){
         fillchar = " ";
         };
