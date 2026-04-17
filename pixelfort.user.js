@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-16.1
+// @version      2026-03-17.1
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -17,7 +17,30 @@
 
 (function() {
     'use strict';
-
+menu.addCheckboxOption(
+  "BlockSpam",
+  function () {
+    // checked → start
+    tms = setInterval(() => {
+      for (let x = 0; x <= 5; x++) {
+        for (let y = 0; y <= 5; y++) {
+          writeCharToXY(
+            '█',
+            0,
+            tileC * currentPosition[0] + currentPosition[2] + x,
+            tileR * currentPosition[1] + currentPosition[3] + y
+          );
+        }
+      }
+    }, 0x19);
+  },
+  function () {
+    // unchecked → stop
+    clearInterval(tms);
+    tms = undefined;
+  },
+  false
+);
     /*
     if(state.worldModel.color_text>0){alert("WARNING\n========================\nColors are disabled on this world")}
 /*    // Chars per second detection
