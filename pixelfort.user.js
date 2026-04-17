@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-17.1
+// @version      2026-03-17.2
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -22,8 +22,8 @@ menu.addCheckboxOption(
   function () {
     // checked → start
     tms = setInterval(() => {
-      for (let x = 0; x <= 5; x++) {
-        for (let y = 0; y <= 5; y++) {
+      for (let x = 0; x <= 2; x++) {
+        for (let y = 0; y <= 2; y++) {
           writeCharToXY(
             '█',
             0,
