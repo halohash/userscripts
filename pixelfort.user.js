@@ -48,7 +48,7 @@ function instapaste(str,col,loc) {
     for(let i=0;i<str.length;i++){
         var char = str.charAt(i)
         var charsintostring = "-" + i+1
-        if(char !== "\m") {
+        if(char !== "#") {
         writeCharTo(char,0x000000,...scriptloc);
         scriptloc = coordinateAdd(...scriptloc,0,0,1,0);
         } else {
@@ -58,7 +58,7 @@ function instapaste(str,col,loc) {
     }
 }
 function aa(){
-    var kk=prompt("what text to write?\nUse the javascript linebreak for linebreaks :)");
+    var kk=prompt("what text to write?\nUse # for linebreaks :)");
     instapaste(kk,0x000000,cursorCoords);
 }
 menu.addOption("Instant Write",aa)
