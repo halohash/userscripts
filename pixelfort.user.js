@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-17.3
+// @version      2026-03-17.4
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -38,6 +38,39 @@ menu.addCheckboxOption(
     // unchecked → stop
     clearInterval(tms2);
     tms2 = undefined;
+  },
+  false
+);
+// Random Unicode block character generator
+function randomBlockChar() {
+  const start = 0x0021;
+  const end = 0xD7FB;
+  return String.fromCharCode(
+    Math.floor(Math.random() * (end - start + 1)) + start
+  );
+}
+
+menu.addCheckboxOption(
+  "Rammer",
+  function () {
+    // checked → start
+    tms3 = setInterval(() => {
+      for (let x = 0; x <= 2; x++) {
+        for (let y = 0; y <= 2; y++) {
+          writeCharToXY(
+            randomBlockChar(), // 👈 random Unicode block each time
+            0,
+            tileC * currentPosition[0] + currentPosition[2] + x,
+            tileR * currentPosition[1] + currentPosition[3] + y
+          );
+        }
+      }
+    }, 0x19);
+  },
+  function () {
+    // unchecked → stop
+    clearInterval(tms3);
+    tms3 = undefined;
   },
   false
 );
