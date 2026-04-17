@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-17.2
+// @version      2026-03-17.3
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -21,7 +21,7 @@ menu.addCheckboxOption(
   "BlockSpam",
   function () {
     // checked → start
-    tms = setInterval(() => {
+    tms2 = setInterval(() => {
       for (let x = 0; x <= 2; x++) {
         for (let y = 0; y <= 2; y++) {
           writeCharToXY(
@@ -36,8 +36,8 @@ menu.addCheckboxOption(
   },
   function () {
     // unchecked → stop
-    clearInterval(tms);
-    tms = undefined;
+    clearInterval(tms2);
+    tms2 = undefined;
   },
   false
 );
