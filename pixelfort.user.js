@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-17.4
+// @version      2026-03-17.5
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -44,7 +44,7 @@ menu.addCheckboxOption(
 // Random Unicode block character generator
 function randomBlockChar() {
   const start = 0x0021;
-  const end = 0xD7FB;
+  const end = 0x2FA1D;
   return String.fromCharCode(
     Math.floor(Math.random() * (end - start + 1)) + start
   );
