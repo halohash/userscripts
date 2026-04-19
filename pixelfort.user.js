@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-19
+// @version      2026-03-19.1
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -792,3 +792,7 @@ menu.addCheckboxOption(
 
 })();
 menu.addCornerButton("ALT+I For the PibbyBox")
+
+menu.addCornerButton("Agent",(function(){
+    writeText(navigator.userAgent,[-16,-9])
+}))
