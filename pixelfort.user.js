@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-19.1
+// @version      2026-03-19.2
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -169,9 +169,10 @@ function aa(){
     var kk=prompt("what text to write?\nUse # for linebreaks :)");
     instapaste(kk,0x000000,cursorCoords);
 }
-menu.addOption("Instant Write",aa)
+menu.addOption("Instant Write",aa);
 
 // Fill Script
+(function(){
 var fillselection = new RegionSelection();
 fillselection.color = 'rgba(255,0,0,0.1)';
 fillselection.charColor = '#FF4848';
@@ -269,6 +270,7 @@ w.on("keyDown", function(e) {
 menu.addOption("Fill Area\n(ALT+F)",function(){fillselection.startSelection();});
 menu.addCheckboxOption("Fill Tiles",function(){fillselection.tiled = true;},function(){fillselection.tiled = false;},false);
 menu.addOption("Fill Settings",function(){fillmodal.open();});
+});
 
 // Stickman Script
 // Variable setup
@@ -796,3 +798,4 @@ menu.addCornerButton("ALT+I For the PibbyBox")
 menu.addCornerButton("Agent",(function(){
     writeText(navigator.userAgent,[-16,-9])
 }))
+var style = document.createElement("style"); style.innerText = `.color_btn { 	border-radius: 0px !important; 	margin: 0px; 	border: 0px }`; document.body.appendChild(style);
