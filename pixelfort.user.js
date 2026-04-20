@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-19.2
+// @version      2026-03-19.3
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -799,3 +799,169 @@ menu.addCornerButton("Agent",(function(){
     writeText(navigator.userAgent,[-16,-9])
 }))
 var style = document.createElement("style"); style.innerText = `.color_btn { 	border-radius: 0px !important; 	margin: 0px; 	border: 0px }`; document.body.appendChild(style);
+function getShapeRadiusFactor(shape, angle, nSides) {
+    angle = angle % (Math.PI * 2);
+    if (angle < 0) angle += Math.PI * 2;
+
+    const starMath = (freq, innerRad) => {
+        return 1 - (1 - innerRad) * Math.abs(Math.sin((freq * angle) / 2));
+    };
+
+    switch (shape) {
+        case "circle":
+            return 1;
+        case "square":
+            let sqA = angle + (Math.PI / 4);
+            return 1 / Math.max(Math.abs(Math.cos(sqA)), Math.abs(Math.sin(sqA)));
+        case "triangle":
+            nSides = 3;
+        case "ngon":
+            if (!nSides || nSides < 3) nSides = 3;
+            let thetaP = angle + Math.PI / 2;
+            return Math.cos(Math.PI / nSides) / Math.cos((thetaP % (2 * Math.PI / nSides)) - (Math.PI / nSides));
+        case "star":
+            if (!nSides || nSides < 3) nSides = 5;
+            return starMath(nSides, 0.4);
+        case "burst":
+            return 0.8 + Math.random() * 0.2;
+        case "cross":
+            return starMath(4, 0.25);
+        case "flower":
+            if (!nSides) nSides = 5;
+            return 0.8 + 0.2 * Math.cos(nSides * angle);
+        case "astroid":
+            let ast = Math.pow(Math.abs(Math.cos(angle)), 2/3) + Math.pow(Math.abs(Math.sin(angle)), 2/3);
+            return 1 / Math.pow(ast, 1.5);
+        case "squircle":
+            let s4 = Math.pow(Math.cos(angle), 4) + Math.pow(Math.sin(angle), 4);
+            return 1 / Math.pow(s4, 0.25);
+        case "heart":
+            let hA = angle - Math.PI / 2;
+            let rH = 2 - 2 * Math.sin(hA) + Math.sin(hA) * (Math.sqrt(Math.abs(Math.cos(hA))) / (Math.sin(hA) + 1.4));
+            return rH / 4;
+        default:
+            return 1;
+    }
+}
+
+async function runExtendedWiper(cfg) {
+    const tc = (state && state.worldModel && state.worldModel.tileCols) || 16;
+    const tr = (state && state.worldModel && state.worldModel.tileRows) || 8;
+
+    let cx, cy;
+    if (window.cursorCoords) {
+        cx = Math.floor(cursorCoords[0] * tc + cursorCoords[2]);
+        cy = Math.floor(cursorCoords[1] * tr + cursorCoords[3]);
+    } else {
+        let center = w.getCenterCoords();
+        cx = Math.floor(center[1] * tc);
+        cy = Math.floor(center[0] * tr);
+    }
+
+    let pointMap = new Map();
+
+    for (let i = 0; i < cfg.density; i++) {
+        let theta = (i / cfg.density) * Math.PI * 2;
+        let shapeFactor = getShapeRadiusFactor(cfg.shape, theta, cfg.sides);
+        let tx = Math.round(cx + (Math.cos(theta) * cfg.radius * shapeFactor));
+        let ty = Math.round(cy + (Math.sin(theta) * cfg.radius * shapeFactor) / 2);
+        let path = lineGen(cx, cy, tx, ty);
+
+        for (let p of path) {
+            let px = Math.floor(p[0]);
+            let py = Math.floor(p[1]);
+            let key = `${px},${py}`;
+            if (!pointMap.has(key)) {
+                let dx = px - cx;
+                let dy = (py - cy) * 2;
+                let distSq = dx*dx + dy*dy;
+                let angle = Math.atan2(dy, dx);
+                if (angle < 0) angle += Math.PI * 2;
+                pointMap.set(key, { x: px, y: py, dist: distSq, angle: angle, dx: dx, dy: dy });
+            }
+        }
+    }
+
+    let points = Array.from(pointMap.values());
+    const comparators = {
+        "radius": (a, b) => a.dist - b.dist,
+        "reverse_radius": (a, b) => b.dist - a.dist,
+        "theta": (a, b) => a.angle - b.angle,
+        "theta_rev": (a, b) => b.angle - a.angle,
+        "reading": (a, b) => (a.y - b.y) || (a.x - b.x),
+        "vertical": (a, b) => (a.x - b.x) || (a.y - b.y),
+        "manhattan": (a, b) => (Math.abs(a.dx) + Math.abs(a.dy)) - (Math.abs(b.dx) + Math.abs(b.dy)),
+        "random": () => Math.random() - 0.5,
+        "checkerboard": (a, b) => (((a.x + a.y) % 2) & 1) - (((b.x + b.y) % 2) & 1) || (a.dist - b.dist),
+        "spiral": (a, b) => (a.dist + (a.angle * (cfg.radius * 2))) - (b.dist + (b.angle * (cfg.radius * 2)))
+    };
+
+    points.sort(comparators[cfg.order] || comparators["radius"]);
+
+    const batchSize = 30;
+    for (let i = 0; i < points.length; i++) {
+        let p = points[i];
+        writeCharToXY(cfg.char, YourWorld.Color, p.x, p.y, YourWorld.BgColor);
+        if (cfg.wait > 0 && i % batchSize === 0) {
+            await new Promise(r => setTimeout(r, cfg.wait));
+        }
+    }
+}
+
+function addSelect(modal, labelText, options, defaultVal) {
+    let container = modal.inputField;
+    let lab = document.createElement("label");
+    lab.innerText = labelText + ":";
+    lab.style.marginRight = "3px";
+    let sel = document.createElement("select");
+    sel.style.width = "150px";
+    for (let key in options) {
+        let opt = document.createElement("option");
+        opt.value = key;
+        opt.innerText = options[key];
+        if (key === defaultVal) opt.selected = true;
+        sel.appendChild(opt);
+    }
+    container.appendChild(lab);
+    container.appendChild(sel);
+    return { input: sel };
+}
+
+var exModal = new Modal();
+exModal.createForm();
+exModal.setFormTitle("Wiper Tool", {bold: true});
+
+var iRad = exModal.addEntry("Radius", "text", "number");
+var iDen = exModal.addEntry("Rays", "text", "number");
+var sShape = addSelect(exModal, "Shape", {
+    "circle": "Circle", "square": "Square", "triangle": "Triangle", "ngon": "N-Gon",
+    "star": "Star", "cross": "Cross", "astroid": "Astroid", "flower": "Flower",
+    "heart": "Heart", "squircle": "Squircle", "burst": "Burst"
+}, "circle");
+var sOrder = addSelect(exModal, "Order", {
+    "radius": "Radius Out", "reverse_radius": "Radius In", "manhattan": "Manhattan",
+    "theta": "Theta CW", "theta_rev": "Theta CCW", "reading": "Reading",
+    "vertical": "Vertical", "checkerboard": "Checkerboard", "spiral": "Spiral", "random": "Random"
+}, "radius");
+var iSide = exModal.addEntry("Sides", "text", "number");
+var iChar = exModal.addEntry("Character", "text");
+var iWait = exModal.addEntry("Wait", "text", "number");
+
+exModal.alignForm();
+iRad.input.value = "30"; iDen.input.value = "150"; iSide.input.value = "5"; iChar.input.value = " "; iWait.input.value = "10";
+
+exModal.onSubmit(function() {
+    runExtendedWiper({
+        radius: parseInt(iRad.input.value),
+        density: parseInt(iDen.input.value),
+        shape: sShape.input.value,
+        order: sOrder.input.value,
+        sides: parseInt(iSide.input.value),
+        char: iChar.input.value || " ",
+        wait: parseInt(iWait.input.value)
+    });
+});
+
+if (w.menu) {
+    w.menu.addOption("Wiper Tool", () => exModal.open());
+}
