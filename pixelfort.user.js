@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-03-19.4
+// @version      2026-04-20
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -725,7 +725,7 @@ menu.addCheckboxOption(
 
     var selection = new RegionSelection();
 
-    selection.charColor = "#00AA00";
+    selection.charColor = "#000000";
     selection.color = "rgba(0, 0, 255, 0.1)";
     selection.tiled = false;
 
@@ -967,3 +967,21 @@ exModal.onSubmit(function() {
 if (w.menu) {
     w.menu.addOption("Wiper Tool", () => exModal.open());
 }
+ne = "█";
+
+const palette = [0,1,128,255,20608,32768,32896,33023,43775,52416,55552,65280,65442,65535,1194684,3227993,4210752,4469691,6758128,7248330,8388352,8388608,8388736,8388863,8404992,8421376,8421504,8421631,8900331,9449273,12246302,12632256,12648430,13631488,16405279,16436888,16711680,16711808,16711935,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+function xe(e) {
+    event_mouseup(e);
+
+    if (e.buttons === 1) {
+        const color = palette[(Math.random() * palette.length) | 0];
+        writeChar(ne, true, color);
+    }
+}
+
+w.menu.addCheckboxOption(
+    "Darkness Paint Beta",
+    () => owot.addEventListener("mousemove", xe),
+    () => owot.removeEventListener("mousemove", xe)
+);
