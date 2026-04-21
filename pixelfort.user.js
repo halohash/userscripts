@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-04-20
+// @version      2026-04-21
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -598,9 +598,9 @@ menu.addOption("Socket2OWOTHOME",
     selection.charColor = "#00AA00";
     selection.color = "rgba(0, 0, 255, 0.1)";
     selection.tiled = false;
-filltargetenabled = false
+    filltargetenabled = false
     const LOCK_CHAR = "█";
-fillchar = LOCK_CHAR;
+    fillchar = LOCK_CHAR;
     const colorJSON = '[0,1,128,255,20608,32768,32896,33023,43775,52416,55552,65280,65442,65535,1194684,3227993,4210752,4469691,6758128,7248330,8388352,8388608,8388736,8388863,8404992,8421376,8421504,8421631,8900331,9449273,12246302,12632256,12648430,13631488,16405279,16436888,16711680,16711808,16711935,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]';
     const colors = JSON.parse(colorJSON);
 
@@ -609,10 +609,10 @@ const myColors = JSON.parse(colorJSON);
 function getRandomColor() {
     return myColors[Math.floor(Math.random() * myColors.length)];
 }
-
+selection.tiled = false
     selection.onselection(function(coordA, coordB, regWidth, regHeight) {
         let charCoord = [...coordA];
-
+filltarget = 0x000000;
         for (let yy = 0; yy < regHeight; yy++) {
             for (let xx = 0; xx < regWidth; xx++) {
 
@@ -624,7 +624,7 @@ function getRandomColor() {
                 let randomColor = getRandomColor();
 
                 if (filltargetenabled === true) {
-                    if (charCol == parseInt(filltarget, 10)) {
+                    if (charCol !== parseInt(filltarget, 10)) {
                         writeCharTo(LOCK_CHAR, randomColor, ...charCoord, true, true, null);
                     }
 
@@ -650,6 +650,16 @@ console.log("randomColor:", colors[Math.floor(Math.random() * colors.length)]);
     w.on("keyDown", function(e) {
         if (checkKeyPress(e, "ALT+I")) {
             selection.startSelection();
+        };
+         if (checkKeyPress(e, "ALT+K")) {
+            if (filltargetenabled === false) {
+                filltargetenabled = true
+            } else {filltargetenabled = false}
+        };
+        if (checkKeyPress(e, "ALT+N")) {
+            if (selection.tiled === false) {
+                selection.tiled = true
+            } else {selection.tiled = false}
         }
     });
 
@@ -721,85 +731,9 @@ menu.addCheckboxOption(
     // default checked state
     false
 );
-(function() {
-
-    var selection = new RegionSelection();
-
-    selection.charColor = "#000000";
-    selection.color = "rgba(0, 0, 255, 0.1)";
-    selection.tiled = false;
-
-    let filltargetenabled = false;
-
-    const colorJSON = '[0,1,128,255,20608,32768,32896,33023,43775,52416,55552,65280,65442,65535,1194684,3227993,4210752,4469691,6758128,7248330,8388352,8388608,8388736,8388863,8404992,8421376,8421504,8421631,8900331,9449273,12246302,12632256,12648430,13631488,16405279,16436888,16711680,16711808,16711935,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]';
-
-    const colors = JSON.parse(colorJSON);
-
-    // 🔹 Character set (edit this to change style)
-    const charSet = "̶qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-
-    function getRandomColor() {
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    function getRandomChar() {
-        return charSet[Math.floor(Math.random() * charSet.length)];
-    }
-
-    selection.onselection(function(coordA, coordB, regWidth, regHeight) {
-        let charCoord = [...coordA];
-
-        for (let yy = 0; yy < regHeight; yy++) {
-            for (let xx = 0; xx < regWidth; xx++) {
-
-                let info = getCharInfo(...charCoord);
-                let charCol = info.color;
-                let charSymbol = info.char;
-                let charBcol = info.bgColor;
-
-                let randomColor = getRandomColor();
-                let randomChar = getRandomChar();
-
-                if (filltargetenabled === true) {
-                    if (charCol == parseInt(filltarget, 10)) {
-                        writeCharTo(randomChar, randomColor, ...charCoord, true, true, null);
-                    }
-
-                } else if (fillchar === " " && fillbcolor === null) {
-                    if (charSymbol !== " " || charBcol !== -1) {
-                        writeCharTo(randomChar, randomColor, ...charCoord, true, true, null);
-                    }
-
-                } else {
-                    writeCharTo(randomChar, randomColor, ...charCoord, true, true, null);
-                }
-
-                charCoord = coordinateAdd(...charCoord, 0, 0, 1, 0);
-            }
-            charCoord = coordinateAdd(...charCoord, 0, 0, -regWidth, 1);
-        }
-    });
-
-    // 🔹 Debug logs
-    console.log("colors:", colors);
-    console.log("length:", colors.length);
-    console.log("randomColor:", getRandomColor());
-    console.log("randomChar:", getRandomChar());
-
-    w.on("keyDown", function(e) {
-        if (checkKeyPress(e, "ALT+J")) {
-            selection.startSelection();
-        }
-    });
-
-})();
 if (menu.addCornerButton) {
-menu.addCornerButton("ALT+I For the PibbyBox")
+menu.addCornerButton("ALT+I For the PibbyBox and ALT+K To Toggle DarknessReplace")
 
-menu.addCornerButton("Agent",(function(){
-    writeText(navigator.userAgent,[-16,-9])
-}))
-};
 var style = document.createElement("style"); style.innerText = `.color_btn { 	border-radius: 0px !important; 	margin: 0px; 	border: 0px }`; document.body.appendChild(style);
 function getShapeRadiusFactor(shape, angle, nSides) {
     angle = angle % (Math.PI * 2);
@@ -979,9 +913,9 @@ function xe(e) {
         writeChar(ne, true, color);
     }
 }
-
 w.menu.addCheckboxOption(
     "Darkness Paint Beta",
     () => owot.addEventListener("mousemove", xe),
     () => owot.removeEventListener("mousemove", xe)
 );
+}
