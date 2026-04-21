@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-04-21
+// @version      2026-04-21.1
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -624,7 +624,7 @@ filltarget = 0x000000;
                 let randomColor = getRandomColor();
 
                 if (filltargetenabled === true) {
-                    if (charCol !== parseInt(filltarget, 10)) {
+                    if (charCol === parseInt(filltarget, 10)) {
                         writeCharTo(LOCK_CHAR, randomColor, ...charCoord, true, true, null);
                     }
 
