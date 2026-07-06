@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-05-29.1
+// @version      2026-07-05
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -891,5 +891,9 @@ exModal.onSubmit(function() {
 if (w.menu) {
     w.menu.addOption("Wiper Tool", () => exModal.open());
     menu.addOption("Paste image...", (()=>{"use strict";window.rlt=true;setTimeout(()=>{window.rlt=false},120000);function t(t){for(var e=[],r=0,a=0;a<3;a++){for(var n=0;n<t.length;n++)r+=t[n][a];e.push(Math.floor(r/t.length)),r=0}return e}function e(t,r,a,n){return 0==t&&0==r&&0==a?e(1,1,1):(t<<16)+(r<<8)|a}function n(t){return new Promise(e=>{setTimeout(e,t)})}function o(t,r){const a=[t>>16&255,t>>8&255,255&t],n=[r>>16&255,r>>8&255,255&r],o=[];for(let t=0;t<a.length;t++)o.push(Math.floor((a[t]+n[t])/2));return e(...o)}!function(){var i=prompt("Image URL?","https://i.imgur.com/vuPAZ7S.jpeg");if(!i)return alert("Cancelled.");var s=!Permissions.can_color_cell(state.userModel, state.worldModel);const l=document.createElement("img");l.src=i,l.style.display="none",l.crossOrigin="anonymous",l.addEventListener("load",async function(){const{img:u}=await async function(r,a){var{res:n,inCTX:o}=await function(t){return new Promise(async e=>{var r,a,n,o=(r=t.naturalWidth,a=t.naturalHeight,(n=document.createElement("canvas")).width=r,n.height=a,n.style.display="none",n).getContext("2d");o.drawImage(t,0,0),e({res:[t.naturalWidth,t.naturalHeight],inCTX:o})})}(r),[i,s]=n,l=[],u=a;if(a>18&&(u=1,i!=a))for(;i/u>a;)u++;for(var c=0;c<s;c+=2*u){for(var h=0;h<i;h+=u){for(var d=[],f=[],g=0;g<u;g++)for(var m=0;m<Math.floor(u/2);m++)d.push(Array.from(o.getImageData(h+g,c+m,1,1).data)),f.push(Array.from(o.getImageData(h+g,c+m+Math.floor(u/2),1,1).data));var p=t(d.filter(t=>t.length>0)),v=t(f.filter(t=>t.length>0));l.push(0,e(...p),e(...v.length>0?v:[0,0,0]))}l.push(1,0,0)}return{img:l,res:n}}(l,i.includes("i2o_fullres")?4:120);for(let t=0;t<u.length;t+=3)0==u[t]?s?writeChar("█",!1,o(u[t+1],u[t+2])):writeChar("▀",!1,u[t+1],!1,0,u[t+2]):1==u[t]&&writeChar("\n"),await n(10)}),l.addEventListener("error",function(){l.remove(),alert("Invalid URL.")}),document.body.appendChild(l)}()}));
+menu.addOption(
+    "Enable Perms",
+    (function() {alert("every permission activated!");Permissions.can_admin = function(){return true}; Permissions.can_chat = function(){return true}; Permissions.can_color_cell = function(){return true}; Permissions.can_color_text = function(){return true}; Permissions.can_coordlink = function(){return true}; Permissions.can_edit_tile = function(){return true}; Permissions.can_go_to_coord = function(){return true}; Permissions.can_paste = function(){return true}; Permissions.can_protect_tiles = function(){return true}; Permissions.can_read = function(){return true}; Permissions.can_show_cursor = function(){return true}; Permissions.can_urllink = function(){return true}; Permissions.can_write = function(){return true};})
+)
 }
 }
