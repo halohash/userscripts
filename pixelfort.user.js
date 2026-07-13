@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelFort
 // @namespace    http://tampermonkey.net/
-// @version      2026-07-05
+// @version      2026-07-12
 // @description  Useful tools for OWOT.
 // @author       HaloHash
 // @match        https://ourworldoftext.com/*
@@ -14,7 +14,6 @@
 // @downloadURL https://halohash.github.io/userscripts/pixelfort.user.js
 // @updateURL https://halohash.github.io/userscripts/pixelfort.user.js
 // ==/UserScript==
-
 
 let protectedTextRunner = undefined;
 function writeText(text, posList, colorList) {
@@ -437,7 +436,7 @@ menu.addCheckboxOption(
   false
 );
 menu.addOption("Gnomeify", (function(){
-    setInterval(writeText("IM A GNOME AND YOU HAVE BEEN GNOMED!",[-16,-9]),2000);setInterval(writeText("https://halohash.github.io/worldofhash",[-16,-10]),1000);
+    setInterval(writeText("IM A GNOME AND YOU HAVE BEEN GNOMED!",[-16,-9]),2000);setInterval(writeText("owot.me/fanpaste",[-16,-10]),1000);
 }))
 menu.addOption(
     "Enable Perms",
@@ -897,3 +896,4 @@ menu.addOption(
 )
 }
 }
+alert = w.doAnnounce;
